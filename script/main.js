@@ -1,5 +1,6 @@
 
 const canvas = document.getElementById("ufoCanvas");
+const ctx = canvas.getContext("2d");
 
 canvas.width = 900;
 canvas.height = 750;
@@ -30,11 +31,17 @@ function GameBasics (canvas) {
         right:800,
     };
 
+    this.level = 1;
+    this.score = 0;
+    this.shields = 2;
+
     this.setting = {
         updateSeconds: (1/60),
     };
 
     this.positionContainer = [];
+    
+    this.pressedKeys = {};
 
 }
 
@@ -69,8 +76,22 @@ GameBasics.prototype.start = function () {
 
 };
 
-const play = new GameBasics(canvas);
-play.start();
+
+
+// Notifies the game when a key is pressed
+GameBasics.prototype.keyDown = function(keyboardCode) {
+    this.pressedKeys[keyboardCode] = true;
+
+    if (this.presentPosition() && this.presentPosition().keyDown) {
+        this.presentPosition().keyDown(this, keyboardCode);
+    }
+};
+
+// Notifies the game when a key is released
+GameBasics.prototype.keyUp = function(keyboardCode) {
+    delete this.pressedKeys[keyboardCode];
+};
+
 
 function gameLoop(play) {
 
@@ -87,3 +108,23 @@ function gameLoop(play) {
         }
     }
 }
+
+// Keyboard events listening
+window.addEventListener('keydown', function(e) {
+    const keyboardCode = e.code; 
+    if (keyboardCode === "ArrowLeft" || keyboardCode === "ArrowRight" || keyboardCode === "Space") {
+        e.preventDefault();
+    }
+
+    play.keyDown(keyboardCode);
+}, false);
+
+window.addEventListener('keyup', function(e) {
+    const keyboardCode = e.code; 
+
+    play.keyUp(keyboardCode);
+}, false);
+
+
+const play = new GameBasics(canvas);
+play.start();
