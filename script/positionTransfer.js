@@ -1,28 +1,24 @@
 function TransferPosition(level) {
-  this.level = level; // lưu level hiện tại
-  this.num = 1;       // biến đếm frame
+    this.level = level;
+    this.fontSize = 140;      
+    this.fontColor = 255;     
 }
 
-TransferPosition.prototype.update = function(play) {
-  this.num++;
+TransferPosition.prototype.update = function (play) {
 
-  if (this.num > 120) {
-    play.goToPosition(new InGamePosition(play.settings, this.level));
-  }
+    this.fontSize -= 1;
+    this.fontColor -= 1.5;
+
+    if (this.fontSize < 1) {
+        play.goToPosition(new InGamePosition(play.setting, this.level));
+    }
 };
 
-TransferPosition.prototype.draw = function(play) {
+TransferPosition.prototype.draw = function (play) {
+    ctx.clearRect(0, 0, play.width, play.height);
 
-  ctx.clearRect(0, 0, play.width, play.height);
-
-  ctx.font = "40px Comic Sans MS";
-  ctx.textAlign = "center";
-  ctx.fillStyle = "rgba(255,255,255,1)";
-
-  ctx.fillText(
-    "Get ready for level " + this.level,
-    play.width / 2,
-    play.height / 2
-  );
+    ctx.font = this.fontSize + "px Comic Sans MS";
+    ctx.textAlign = "center";
+    ctx.fillStyle = "rgba(255," + this.fontColor + "," + this.fontColor + ",1)";
+    ctx.fillText("Get ready for level " + this.level, play.width / 2, play.height / 2);
 };
-

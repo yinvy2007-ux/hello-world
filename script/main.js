@@ -55,7 +55,7 @@ GameBasics.prototype.goToPosition = function (position) {
     }
 
     if (position.entry) {
-        position.entry(play);
+        position.entry(this);
     }
 
     this.positionContainer.push(position);
@@ -89,8 +89,14 @@ GameBasics.prototype.keyDown = function(keyboardCode) {
 
 // Notifies the game when a key is released
 GameBasics.prototype.keyUp = function(keyboardCode) {
-    delete this.pressedKeys[keyboardCode];
+  delete this.pressedKeys[keyboardCode];
+
+  // forward xuống position hiện tại (đồng bộ với keyDown)
+  if (this.presentPosition() && this.presentPosition().keyUp) {
+    this.presentPosition().keyUp(this, keyboardCode);
+  }
 };
+
 
 
 function gameLoop(play) {
@@ -111,19 +117,28 @@ function gameLoop(play) {
 
 // Keyboard events listening
 window.addEventListener('keydown', function(e) {
-    const keyboardCode = e.code; 
-    if (keyboardCode === "ArrowLeft" || keyboardCode === "ArrowRight" || keyboardCode === "Space") {
-        e.preventDefault();
-    }
+  const keyboardCode = e.code;
+if (
+  keyboardCode === "ArrowLeft"  ||
+  keyboardCode === "ArrowRight" ||
+  keyboardCode === "ArrowUp"    ||
+  keyboardCode === "ArrowDown"  ||
+  keyboardCode === "Space"
+) {
+  e.preventDefault();
+}
 
-    play.keyDown(keyboardCode);
+
+  console.log("window keydown:", keyboardCode);
+  play.keyDown(keyboardCode);
 }, false);
 
 window.addEventListener('keyup', function(e) {
-    const keyboardCode = e.code; 
-
-    play.keyUp(keyboardCode);
+  const keyboardCode = e.code;
+  console.log("window keyup:", keyboardCode); 
+  play.keyUp(keyboardCode);
 }, false);
+
 
 
 const play = new GameBasics(canvas);
